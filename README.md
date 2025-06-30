@@ -1,1 +1,3 @@
 # TFI-Concurrencia
+
+## Bibliotecas utilizadas
