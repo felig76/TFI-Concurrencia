@@ -28,6 +28,7 @@ def insertar_pedido(cliente, direccion, estado, fecha_pedido):
         (cliente, direccion, estado, fecha_pedido)
     )
 
+<<<<<<< HEAD
 # select pedidos
 
 
@@ -35,3 +36,8 @@ def insertar_pedido(cliente, direccion, estado, fecha_pedido):
 
 
 # logica de asignaciones
+=======
+def cliente_existe(telefono):
+    result = conexion("SELECT id_cliente FROM Clientes WHERE telefono = ?", (telefono,), fetch=True)
+    return result[0][0] if result else None
+>>>>>>> e49ae137a1b4de491cc7f5cd1f8fd9d0c7aa0913
