@@ -21,9 +21,17 @@ def insertar_repartidor(nombre, estado):
 def repartidores_disponibles():
     return conexion("SELECT * FROM Repartidores WHERE estado = ?", ('disponible',), fetch=True)
 
+
 def insertar_pedido(cliente, direccion, estado, fecha_pedido):
     conexion(
         "INSERT INTO Pedidos (cliente, direccion, estado, fecha_pedido) VALUES (?, ?, ?, ?)",
         (cliente, direccion, estado, fecha_pedido)
     )
 
+# select pedidos
+
+
+# insert y select historial
+
+
+# logica de asignaciones
