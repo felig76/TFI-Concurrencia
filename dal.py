@@ -27,3 +27,6 @@ def insertar_pedido(cliente, direccion, estado, fecha_pedido):
         (cliente, direccion, estado, fecha_pedido)
     )
 
+def cliente_existe(telefono):
+    result = conexion("SELECT id_cliente FROM Clientes WHERE telefono = ?", (telefono,), fetch=True)
+    return result[0][0] if result else None
