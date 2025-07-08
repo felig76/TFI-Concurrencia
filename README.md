@@ -1,6 +1,5 @@
 # TFI-Concurrencia
 
-nos quedamos en: linea 74 del log.py
-que hacemos con los repartidores disponibles para que tomen pedidos
+nos quedamos en hacer que se puedan emitir pedidos desde la gui accediendo a una cola creada desde la gui que comparte con el metodo bucle_monitor para que este pueda acceder a los pedidos
 
 ## Bibliotecas utilizadas
