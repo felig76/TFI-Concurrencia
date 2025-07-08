@@ -7,16 +7,25 @@ import time
 
 class Repartidor(threading.Thread):
     def __init__(self, id, nombre, estado, cola):
+        super().__init__()
         self.id = id
         self.nombre = nombre
         self.estado = estado
         self.cola = cola
         self.pedido = None
     
+    def run(self):
+        while True:
+            if self.cola.qsize() > 0 and self.estado == 'disponible':
+                self.tomar_pedido()
+            else:
+                time.sleep(1)
+    
     
     def tomar_pedido(self):
         self.pedido = self.cola.get()
         self.pedido.estado = 'En camino'
+        print(f"El repartidor {self.id} ha tomado el pedido {self.pedido}")
         dal.actualizar_pedido(self.pedido.cliente, self.pedido.direccion, self.pedido.estado)
         self.estado = 'Ocupado'
         dal.actualizar_repartidor(self.id, self.estado)
@@ -25,9 +34,10 @@ class Repartidor(threading.Thread):
 
 
     def entregar_pedido(self):
-        self.pedido.estado = 'Entregado'
+        self.pedido.estado = 'entregado'
         dal.actualizar_pedido(self.pedido.cliente, self.pedido.direccion, self.pedido.estado)
-        self.estado = 'Disponible'
+        print(f"El repartidor {self.id} ha entregado el pedido {self.pedido}")
+        self.estado = 'disponible'
         dal.actualizar_repartidor(self.id, self.estado)
 
 
@@ -42,17 +52,13 @@ class ColaPedidos(q.Queue):
     def __init__(self):
         super().__init__()
 
-class ColaRepartidores(q.Queue):
-    def __init__(self):
-        super().__init__()
-
 def repartidores():
     return dal.repartidores_disponibles()
 
-def cargar_pedido(cliente, direccion):
-    ColaPedidos.put(Pedido(cliente, direccion, estado='En preparación', fecha_pedido=datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")))
+def cargar_pedido(cliente, direccion, colaPedidos):
+    colaPedidos.put(Pedido(cliente, direccion, estado='en preparación', fecha_pedido=datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")))
 
-    dal.insertar_pedido(cliente, direccion, estado='En preparación', fecha_pedido=datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+    dal.insertar_pedido(cliente, direccion, estado='en preparación', fecha_pedido=datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
 
 def cargar_cliente(nombre, telefono, email):
     id_cliente = dal.cliente_existe(telefono)
@@ -67,8 +73,7 @@ def obtener_pedidos():
 
 def bucle_monitor():
     colaPedidos = ColaPedidos()
-    for repartidor in repartidores():
-        repartidor = Repartidor(repartidor[0], repartidor[1], repartidor[2], colaPedidos)
-    while True:
-        if not colaPedidos.empty():
+    lista_repartidores = [Repartidor(id, nombre, estado, colaPedidos) for id, nombre, estado in repartidores()]
+    [repartidor.start() for repartidor in lista_repartidores]
 
+bucle_monitor()
