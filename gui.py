@@ -1,6 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 import log
+import queue as q
+import threading
+
+class ColaPedidos(q.Queue):
+    def __init__(self):
+        super().__init__()
 
 class App(tk.Tk):
     def __init__(self):
@@ -10,6 +16,7 @@ class App(tk.Tk):
         self.resizable(False, False)
 
         self.crear_vista_principal()
+        self.colaPedidos = ColaPedidos()
 
     def crear_vista_principal(self):
         frame = ttk.Frame(self)
@@ -54,6 +61,7 @@ class App(tk.Tk):
         # Mostrar repartidores y pedidos iniciales
         self.actualizar_repartidores()
         self.actualizar_pedidos()
+        self.after(2000, self.actualizar_periodicamente)
 
     def agregar_placeholder(self, entry, placeholder):
         entry.insert(0, placeholder)
@@ -77,6 +85,7 @@ class App(tk.Tk):
         telefono = self.entry_telefono.get()
         email = self.entry_email.get()
         direccion = self.entry_direccion.get()
+        colaPedidos = self.colaPedidos
 
         # Validación simple
         if nombre in ["Nombre", ""] or telefono in ["Teléfono", ""] or email in ["Email", ""] or direccion in ["Dirección de entrega", ""]:
@@ -86,7 +95,7 @@ class App(tk.Tk):
         cliente_id = log.cargar_cliente(nombre, telefono, email)
 
         if cliente_id:
-            log.cargar_pedido(cliente_id, direccion)
+            log.cargar_pedido(cliente_id, direccion, colaPedidos)
             print("Pedido generado")
             self.actualizar_repartidores()
             self.actualizar_pedidos()
@@ -103,10 +112,8 @@ class App(tk.Tk):
     def actualizar_pedidos(self):
         pedidos = log.obtener_pedidos()
         self.lista_pedidos.delete(0, tk.END)
-
         for p in pedidos:
             pedido_id, cliente, direccion, estado, fecha_hora = p
-            # Mostramos todos los campos
             self.lista_pedidos.insert(tk.END, f"#{pedido_id}: Cliente {cliente}, {direccion} - {estado} ({fecha_hora})")
 
     def limpiar_campos(self):
@@ -120,7 +127,14 @@ class App(tk.Tk):
             entry.insert(0, placeholder)
             entry.config(foreground='grey')
 
+    def actualizar_periodicamente(self):
+        self.actualizar_repartidores()
+        self.actualizar_pedidos()
+        self.after(2000, self.actualizar_periodicamente)
+
 
 if __name__ == "__main__":
     app = App()
+    monitor_thread = threading.Thread(target=log.bucle_monitor, args=(app.colaPedidos,), daemon=True)
+    monitor_thread.start()
     app.mainloop()
