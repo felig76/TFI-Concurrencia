@@ -4,5 +4,5 @@
 #### Glavich Felipe
 
 
-## Bibliotecas Utilizadas:
+### Bibliotecas Utilizadas:
 #### tkinter, ttk, queue, threading, datetime, time, random, sqlite3
