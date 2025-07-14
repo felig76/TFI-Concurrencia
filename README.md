@@ -5,5 +5,5 @@
 
 ---
 
-## Bibliotecas Utilizadas:
+## Bibliotecas utilizadas:
 ### tkinter, ttk, queue, threading, datetime, time, random, sqlite3
