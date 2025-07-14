@@ -23,6 +23,7 @@ class Repartidor(threading.Thread):
     def tomar_pedido(self):
         self.pedido = self.cola.get()
         self.pedido.estado = 'en camino'
+        time.sleep(2)
         print(f"El repartidor {self.id} ha tomado el pedido {self.pedido.id}")
         dal.actualizar_pedido(self.pedido.id, self.pedido.estado)
         self.estado = 'ocupado'
