@@ -1,8 +1,8 @@
-## Alumnos:
-#### Arduino Marcos
-#### Ermel Valentin
-#### Glavich Felipe
+# Alumnos:
+### Arduino Marcos
+### Ermel Valentin
+### Glavich Felipe
 
 
-### Bibliotecas Utilizadas:
+## Bibliotecas Utilizadas:
 #### tkinter, ttk, queue, threading, datetime, time, random, sqlite3
